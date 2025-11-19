@@ -9,7 +9,7 @@ import { createError } from '../utils/error.util.js';
  */
 export const createOrganizer = async (organizerData) => {
   const { data, error } = await supabase
-    .from('organizers')
+    .from('organizer_registrations')
     .insert([organizerData])
     .select()
     .single();
@@ -28,7 +28,7 @@ export const createOrganizer = async (organizerData) => {
  */
 export const findOrganizerByEmail = async (email) => {
   const { data, error } = await supabase
-    .from('organizers')
+    .from('organizer_registrations')
     .select('*')
     .eq('email', email)
     .maybeSingle();
@@ -51,7 +51,7 @@ class OrganizerService {
    */
   static async getOrganizerById(organizerId) {
     const { data, error } = await supabase
-      .from('organizers')
+      .from('organizer_registrations')
       .select('*')
       .eq('id', organizerId)
       .single();
@@ -71,7 +71,7 @@ class OrganizerService {
    */
   static async updateOrganizer(organizerId, updates) {
     const { data, error } = await supabase
-      .from('organizers')
+      .from('organizer_registrations')
       .update(updates)
       .eq('id', organizerId)
       .select()
