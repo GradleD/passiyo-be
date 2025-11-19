@@ -14,6 +14,7 @@ import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { errorHandler, notFoundHandler } from './utils/error.util.js';
 import swaggerConfig from './config/swagger.config.js';
+import { authenticate } from './middleware/auth.middleware.js';
 
 // Import routes
 import authRoutes from './routes/auth.routes.js';

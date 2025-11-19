@@ -6,16 +6,14 @@ import { createError } from '../utils/error.util.js';
  * Middleware to authenticate JWT token
  */
 export const authenticate = (req, res, next) => {
-  try {
     // Get token from header
-    const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return next(createError(StatusCodes.UNAUTHORIZED, 'No token provided'));
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+      return next(createError(401, 'No token provided, authorization denied'));
     }
 
-    const token = authHeader.split(' ')[1];
-    
+    try {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
@@ -23,14 +21,9 @@ export const authenticate = (req, res, next) => {
     req.user = decoded;
     
     next();
+    
   } catch (error) {
-    if (error.name === 'TokenExpiredError') {
-      return next(createError(StatusCodes.UNAUTHORIZED, 'Token expired'));
-    }
-    if (error.name === 'JsonWebTokenError') {
-      return next(createError(StatusCodes.UNAUTHORIZED, 'Invalid token'));
-    }
-    next(error);
+    next(createError(401, 'Invalid token'));
   }
 };
 
