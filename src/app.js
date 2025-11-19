@@ -15,7 +15,10 @@ import swaggerUi from 'swagger-ui-express';
 import { errorHandler, notFoundHandler } from './utils/error.util.js';
 import swaggerConfig from './config/swagger.config.js';
 import { authenticate } from './middleware/auth.middleware.js';
+import crypto from 'crypto';
 
+const secret = crypto.randomBytes(64).toString('hex');
+console.log(secret);
 // Import routes
 import authRoutes from './routes/auth.routes.js';
 import eventRoutes from './routes/event.routes.js';
@@ -71,6 +74,8 @@ const upload = multer({
 });
 
 // Middleware
+
+
 app.use(helmet());
 app.use(cors({
   origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',
@@ -95,6 +100,19 @@ app.use(
     explorer: true,
     customCss: '.swagger-ui .topbar { display: none }',
     customSiteTitle: 'Event Organizer API',
+    customSiteDescription: 'API documentation for Event Organizer',
+    customSiteFooter: 'Event Organizer API',
+    swaggerOptions: {
+     persistAuthorization: true,
+     security: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+     },
+     
+    }
   })
 );
 
