@@ -9,6 +9,26 @@ const router = Router();
 // @route   POST /api/auth/register
 // @desc    Register a new organizer
 // @access  Public
+
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Register a new organizer
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [draft, published, cancelled, completed]
+ *         description: Filter events by status
+ *     responses:
+ *       200:
+ *         description: List of events
+ */
 router.post(
   '/register',
   [
@@ -30,6 +50,26 @@ router.post(
 // @route   POST /api/auth/login
 // @desc    Authenticate organizer & get token
 // @access  Public
+
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Authenticate organizer & get token
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [draft, published, cancelled, completed]
+ *         description: Filter events by status
+ *     responses:
+ *       200:
+ *         description: List of events
+ */
 router.post(
   '/login',
   [
@@ -43,16 +83,76 @@ router.post(
 // @route   POST /api/auth/logout
 // @desc    Logout organizer / clear refresh token cookie
 // @access  Private
+
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   post:
+ *     summary: Logout organizer / clear refresh token cookie
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [draft, published, cancelled, completed]
+ *         description: Filter events by status
+ *     responses:
+ *       200:
+ *         description: List of events
+ */
 router.post('/logout', authenticate, logout);
 
 // @route   POST /api/auth/refresh-token
 // @desc    Refresh access token
 // @access  Public
+
+/**
+ * @swagger
+ * /api/auth/refresh-token:
+ *   post:
+ *     summary: Refresh access token
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [draft, published, cancelled, completed]
+ *         description: Filter events by status
+ *     responses:
+ *       200:
+ *         description: List of events
+ */
 router.post('/refresh-token', refreshToken);
 
 // @route   GET /api/auth/me
 // @desc    Get current organizer profile
 // @access  Private
+
+/**
+ * @swagger
+ * /api/auth/me:
+ *   get:
+ *     summary: Get current organizer profile
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [draft, published, cancelled, completed]
+ *         description: Filter events by status
+ *     responses:
+ *       200:
+ *         description: List of events
+ */
 router.get('/me', authenticate, getMe);
 
 export default router;

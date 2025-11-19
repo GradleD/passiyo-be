@@ -1,3 +1,10 @@
+/**
+ * @swagger
+ * tags:
+ *   name: Events
+ *   description: Event management endpoints
+ */
+
 import { Router } from 'express';
 import { body, param, query } from 'express-validator';
 import { validateRequest } from '../middleware/validateRequest.middleware.js';
@@ -20,7 +27,35 @@ const upload = multer({ dest: 'uploads/' });
 // Apply authentication middleware to all routes
 router.use(authenticate);
 
-// Get all events for the current organizer
+/**
+ * @swagger
+ * /api/events:
+ *   get:
+ *     summary: Get all events for the current organizer
+ *     tags: [Events]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [draft, published, cancelled, completed]
+ *         description: Filter events by status
+ *     responses:
+ *       200:
+ *         description: List of events
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Event'
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
 router.get(
   '/',
   [
@@ -33,7 +68,77 @@ router.get(
   getEventsController
 );
 
-// Create a new event
+/**
+ * @swagger
+ * /api/events:
+ *   post:
+ *     summary: Create a new event
+ *     tags: [Events]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - description
+ *               - start_date
+ *               - end_date
+ *               - location
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 maxLength: 100
+ *                 description: Event title
+ *               description:
+ *                 type: string
+ *                 description: Event description
+ *               start_date:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Event start date in ISO8601 format
+ *               end_date:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Event end date in ISO8601 format
+ *               location:
+ *                 type: string
+ *                 description: Event location
+ *               category:
+ *                 type: string
+ *                 description: Event category
+ *               capacity:
+ *                 type: integer
+ *                 minimum: 1
+ *                 description: Maximum number of attendees
+ *               is_online:
+ *                 type: boolean
+ *                 description: Whether the event is online
+ *               online_url:
+ *                 type: string
+ *                 format: uri
+ *                 description: URL for online events
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Event image (JPEG, PNG, or WebP, max 5MB)
+ *     responses:
+ *       201:
+ *         description: Event created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Event'
+ *       400:
+ *         description: Invalid input data
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
 router.post(
   '/',
   upload.single('image'),
@@ -80,7 +185,38 @@ router.post(
   createEventController
 );
 
-// Get a single event
+/**
+ * @swagger
+ * /api/events/{id}:
+ *   get:
+ *     summary: Get a single event by ID
+ *     tags: [Events]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Event ID
+ *     responses:
+ *       200:
+ *         description: Event details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Event'
+ *       400:
+ *         description: Invalid event ID format
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Event not found
+ *       500:
+ *         description: Server error
+ */
 router.get(
   '/:id',
   [
@@ -92,7 +228,82 @@ router.get(
   getEventController
 );
 
-// Update an event
+/**
+ * @swagger
+ * /api/events/{id}:
+ *   patch:
+ *     summary: Update an existing event
+ *     tags: [Events]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Event ID to update
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 maxLength: 100
+ *                 description: Event title
+ *               description:
+ *                 type: string
+ *                 description: Event description
+ *               start_date:
+ *                 type: string
+ *                 format: date-time
+ *                 description: New start date in ISO8601 format
+ *               end_date:
+ *                 type: string
+ *                 format: date-time
+ *                 description: New end date in ISO8601 format
+ *               location:
+ *                 type: string
+ *                 description: New event location
+ *               category:
+ *                 type: string
+ *                 description: New event category
+ *               capacity:
+ *                 type: integer
+ *                 minimum: 1
+ *                 description: New maximum number of attendees
+ *               is_online:
+ *                 type: boolean
+ *                 description: Whether the event is online
+ *               online_url:
+ *                 type: string
+ *                 format: uri
+ *                 description: New URL for online events
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: New event image (JPEG, PNG, or WebP, max 5MB)
+ *     responses:
+ *       200:
+ *         description: Event updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Event'
+ *       400:
+ *         description: Invalid input data
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - Not the event owner
+ *       404:
+ *         description: Event not found
+ *       500:
+ *         description: Server error
+ */
 router.patch(
   '/:id',
   upload.single('image'),
@@ -129,7 +340,36 @@ router.patch(
   updateEventController
 );
 
-// Delete an event
+/**
+ * @swagger
+ * /api/events/{id}:
+ *   delete:
+ *     summary: Delete an event
+ *     tags: [Events]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Event ID to delete
+ *     responses:
+ *       204:
+ *         description: Event deleted successfully
+ *       400:
+ *         description: Invalid event ID format
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - Not the event owner
+ *       404:
+ *         description: Event not found
+ *       500:
+ *         description: Server error
+ */
 router.delete(
   '/:id',
   [
@@ -141,7 +381,40 @@ router.delete(
   deleteEventController
 );
 
-// Publish an event
+/**
+ * @swagger
+ * /api/events/{id}/publish:
+ *   post:
+ *     summary: Publish a draft event
+ *     tags: [Events]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Event ID to publish
+ *     responses:
+ *       200:
+ *         description: Event published successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Event'
+ *       400:
+ *         description: Invalid event ID format or event cannot be published
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - Not the event owner
+ *       404:
+ *         description: Event not found
+ *       500:
+ *         description: Server error
+ */
 router.post(
   '/:id/publish',
   [
@@ -153,7 +426,52 @@ router.post(
   publishEventController
 );
 
-// Get event statistics
+/**
+ * @swagger
+ * /api/events/{id}/stats:
+ *   get:
+ *     summary: Get statistics for an event
+ *     tags: [Events]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Event ID to get statistics for
+ *     responses:
+ *       200:
+ *         description: Event statistics
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 totalAttendees:
+ *                   type: integer
+ *                   description: Total number of attendees
+ *                 attendanceRate:
+ *                   type: number
+ *                   format: float
+ *                   description: Attendance rate (0-1)
+ *                 checkInRate:
+ *                   type: number
+ *                   format: float
+ *                   description: Check-in rate (0-1)
+ *       400:
+ *         description: Invalid event ID format
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - Not the event owner
+ *       404:
+ *         description: Event not found
+ *       500:
+ *         description: Server error
+ */
 router.get(
   '/:id/stats',
   [

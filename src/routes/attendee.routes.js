@@ -14,6 +14,25 @@ import {
 
 const router = Router();
 
+/**
+ * @swagger
+ * /api/attendees:
+ *   get:
+ *     summary: Get all attendees for the current organizer
+ *     tags: [Attendees]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [registered, checked_in, cancelled]
+ *         description: Filter attendees by status
+ *     responses:
+ *       200:
+ *         description: List of attendees
+ */
 // Apply authentication middleware to all routes
 router.use(authenticate);
 
@@ -45,6 +64,32 @@ router.post(
   registerAttendeeController
 );
 
+/**
+ * @swagger
+ * /api/attendees/events/{eventId}/attendees:
+ *   get:
+ *     summary: Get all attendees for an event
+ *     tags: [Attendees]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: eventId
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         required: true
+ *         description: Event ID
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [registered, checked_in, cancelled]
+ *         description: Filter attendees by status
+ *     responses:
+ *       200:
+ *         description: List of attendees
+ */
 // Get all attendees for an event
 router.get(
   '/events/:eventId/attendees',
@@ -71,6 +116,32 @@ router.get(
   getAttendeesController
 );
 
+/**
+ * @swagger
+ * /api/attendees/events/{eventId}/attendees/search:
+ *   get:
+ *     summary: Search attendees by name or email
+ *     tags: [Attendees]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: eventId
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         required: true
+ *         description: Event ID
+ *       - in: query
+ *         name: q
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Search query
+ *     responses:
+ *       200:
+ *         description: List of attendees
+ */
 // Search attendees by name or email
 router.get(
   '/events/:eventId/attendees/search',
@@ -89,6 +160,26 @@ router.get(
   searchAttendeesController
 );
 
+/**
+ * @swagger
+ * /api/attendees/{attendeeId}:
+ *   get:
+ *     summary: Get a single attendee
+ *     tags: [Attendees]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: attendeeId
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         required: true
+ *         description: Attendee ID
+ *     responses:
+ *       200:
+ *         description: Attendee details
+ */
 // Get a single attendee
 router.get(
   '/attendees/:attendeeId',
@@ -101,6 +192,26 @@ router.get(
   getAttendeeController
 );
 
+/**
+ * @swagger
+ * /api/attendees/{attendeeId}:
+ *   patch:
+ *     summary: Update attendee information
+ *     tags: [Attendees]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: attendeeId
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         required: true
+ *         description: Attendee ID
+ *     responses:
+ *       200:
+ *         description: Attendee details
+ */
 // Update attendee information
 router.patch(
   '/attendees/:attendeeId',
@@ -131,6 +242,26 @@ router.patch(
   updateAttendeeController
 );
 
+/**
+ * @swagger
+ * /api/attendees/{attendeeId}/check-in:
+ *   post:
+ *     summary: Check in an attendee
+ *     tags: [Attendees]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: attendeeId
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         required: true
+ *         description: Attendee ID
+ *     responses:
+ *       200:
+ *         description: Attendee details
+ */
 // Check in an attendee
 router.post(
   '/attendees/:attendeeId/check-in',
@@ -143,6 +274,26 @@ router.post(
   checkInAttendeeController
 );
 
+/**
+ * @swagger
+ * /api/attendees/events/{eventId}/attendees/stats:
+ *   get:
+ *     summary: Get attendee statistics for an event
+ *     tags: [Attendees]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: eventId
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         required: true
+ *         description: Event ID
+ *     responses:
+ *       200:
+ *         description: Attendee statistics
+ */
 // Get attendee statistics for an event
 router.get(
   '/events/:eventId/attendees/stats',
