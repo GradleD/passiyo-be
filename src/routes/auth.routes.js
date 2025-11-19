@@ -57,18 +57,39 @@ router.post(
  *   post:
  *     summary: Authenticate organizer & get token
  *     tags: [Auth]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: status
- *         schema:
- *           type: string
- *           enum: [draft, published, cancelled, completed]
- *         description: Filter events by status
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: "organizer@example.com"
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: "your-password"
  *     responses:
  *       200:
- *         description: List of events
+ *         description: Successfully authenticated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: JWT token for authentication
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
  */
 router.post(
   '/login',

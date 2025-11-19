@@ -17,8 +17,8 @@ import swaggerConfig from './config/swagger.config.js';
 import { authenticate } from './middleware/auth.middleware.js';
 import crypto from 'crypto';
 
-const secret = crypto.randomBytes(64).toString('hex');
-console.log(secret);
+//const secret = crypto.randomBytes(64).toString('hex');
+//console.log(secret);
 // Import routes
 import authRoutes from './routes/auth.routes.js';
 import eventRoutes from './routes/event.routes.js';
